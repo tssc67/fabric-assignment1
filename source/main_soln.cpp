@@ -1,4 +1,5 @@
 //Computational Fabrication Assignment #1
+#include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include "../include/CompFab.h"
