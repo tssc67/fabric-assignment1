@@ -1,4 +1,5 @@
 //Computational Fabrication Assignment #1
+#include <algorithm>
 #include <iostream>
 #include <cmath>
 #include <set>
@@ -76,8 +77,8 @@ unsigned int getBucketZ(double z){
     return (int)(z/g_voxelGrid->m_spacing);
 }
 
-void addToBucket(CompFab::Vec3 &v, unsigned int idx){
-    triangleBucket[g_voxelGrid->m_dimY*getBucketZ(v.m_z) + getBucketY(v.m_y)].insert(idx);
+void addToBucket(unsigned int y,unsigned int z, unsigned int idx){
+    triangleBucket[g_voxelGrid->m_dimY*z + y].insert(idx);
 }
 
 
@@ -85,19 +86,22 @@ void addToBucket(CompFab::Vec3 &v, unsigned int idx){
 int numSurfaceIntersections(CompFab::Vec3 &voxel, CompFab::Vec3 &direction)
 {
     
-    unsigned int numHits = 0;
+    unsigned int hits = 0;
 
     //Cast ray in x-direction
     CompFab::Ray ray;
     ray.m_origin = voxel;
     ray.m_direction = direction;
-    //Intersect ray with all triangles and count (NOTE: This is very silly)
-    for(auto idx: triangleBucket[g_voxelGrid->m_dimY*getBucketZ(ray.m_origin.m_z) + getBucketY(ray.m_origin.m_y)])
+
+    for(auto idx: triangleBucket[
+        g_voxelGrid->m_dimY * getBucketZ(ray.m_origin.m_z) 
+        + getBucketY(ray.m_origin.m_y)
+    ])
     {
-        numHits += rayTriangleIntersection(ray,g_triangleList[idx]);
+        hits += rayTriangleIntersection(ray,g_triangleList[idx]);
     }
     
-    return numHits;
+    return hits;
 }
 
 bool loadMesh(char *filename, unsigned int dim)
@@ -198,13 +202,23 @@ int main(int argc, char **argv)
     CompFab::Vec3 direction(1.0,0.0,0.0);
     triangleBucket = new std::set<unsigned int>[g_voxelGrid->m_size/g_voxelGrid->m_dimX];
     printf("m_spacing: %lf\n",g_voxelGrid->m_spacing);
+    int xy,xz,ny,nz;
     for(unsigned int tri=0; tri<g_triangleList.size(); ++tri) {
+        xy = xz = 0;
+        ny = nz = dim;  
         CompFab::Vec3 relative_v1 =  g_triangleList[tri].m_v1 - g_voxelGrid->m_lowerLeft;
         CompFab::Vec3 relative_v2 =  g_triangleList[tri].m_v2 - g_voxelGrid->m_lowerLeft;
         CompFab::Vec3 relative_v3 =  g_triangleList[tri].m_v3 - g_voxelGrid->m_lowerLeft;
-        addToBucket(relative_v1,tri);
-        addToBucket(relative_v2,tri);
-        addToBucket(relative_v3,tri);
+        xy = std::max(getBucketY(relative_v1.m_y),std::max(getBucketY(relative_v2.m_y),getBucketY(relative_v3.m_y)));
+        ny = std::min(getBucketY(relative_v1.m_y),std::max(getBucketY(relative_v2.m_y),getBucketY(relative_v3.m_y)));
+        xz = std::max(getBucketZ(relative_v1.m_z),std::max(getBucketZ(relative_v2.m_z),getBucketZ(relative_v3.m_z)));
+        nz = std::min(getBucketZ(relative_v1.m_z),std::max(getBucketZ(relative_v2.m_z),getBucketZ(relative_v3.m_z)));
+        for(unsigned int bucketY = ny; bucketY < xy; ++bucketY){
+            for(unsigned int bucketZ = nz; bucketZ < xz; ++bucketZ){
+                printf("%d %d\n",bucketY,bucketZ);
+                addToBucket(bucketY, bucketZ, tri);
+            }
+        }
     }
     int sum = 0;
     for(int i=0;i<g_voxelGrid->m_size/g_voxelGrid->m_dimX;++i){
