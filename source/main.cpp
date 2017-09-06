@@ -203,6 +203,8 @@ int main(int argc, char **argv)
     triangleBucket = new std::set<unsigned int>[g_voxelGrid->m_size/g_voxelGrid->m_dimX];
     printf("m_spacing: %lf\n",g_voxelGrid->m_spacing);
     int xy,xz,ny,nz;
+
+    //BucketSort
     for(unsigned int tri=0; tri<g_triangleList.size(); ++tri) {
         xy = xz = 0;
         ny = nz = dim;  
