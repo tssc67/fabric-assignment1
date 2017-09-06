@@ -210,11 +210,11 @@ int main(int argc, char **argv)
         CompFab::Vec3 relative_v2 =  g_triangleList[tri].m_v2 - g_voxelGrid->m_lowerLeft;
         CompFab::Vec3 relative_v3 =  g_triangleList[tri].m_v3 - g_voxelGrid->m_lowerLeft;
         xy = std::max(getBucketY(relative_v1.m_y),std::max(getBucketY(relative_v2.m_y),getBucketY(relative_v3.m_y)));
-        ny = std::min(getBucketY(relative_v1.m_y),std::max(getBucketY(relative_v2.m_y),getBucketY(relative_v3.m_y)));
+        ny = std::min(getBucketY(relative_v1.m_y),std::min(getBucketY(relative_v2.m_y),getBucketY(relative_v3.m_y)));
         xz = std::max(getBucketZ(relative_v1.m_z),std::max(getBucketZ(relative_v2.m_z),getBucketZ(relative_v3.m_z)));
-        nz = std::min(getBucketZ(relative_v1.m_z),std::max(getBucketZ(relative_v2.m_z),getBucketZ(relative_v3.m_z)));
-        for(unsigned int bucketY = ny; bucketY < xy; ++bucketY){
-            for(unsigned int bucketZ = nz; bucketZ < xz; ++bucketZ){
+        nz = std::min(getBucketZ(relative_v1.m_z),std::min(getBucketZ(relative_v2.m_z),getBucketZ(relative_v3.m_z)));
+        for(unsigned int bucketZ = nz; bucketZ < xz; ++bucketZ){
+            for(unsigned int bucketY = ny; bucketY < xy; ++bucketY){
                 printf("%d %d\n",bucketY,bucketZ);
                 addToBucket(bucketY, bucketZ, tri);
             }
