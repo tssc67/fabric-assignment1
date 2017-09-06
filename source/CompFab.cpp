@@ -121,6 +121,17 @@ double CompFab::operator*(const Vec3 &v1, const Vec3 &v2)
 }
 
 
+Vec3 CompFab::operator^(const Vec3 &v1, const Vec3 &v2)
+{
+    Vec3 v3;
+    v3[0] = v1[0] * v2[0];
+    v3[1] = v1[1] * v2[1];
+    v3[2] = v1[2] * v2[2];
+    
+    return v3;
+}
+
+
 //Grid structure for Voxels
 CompFab::VoxelGridStruct::VoxelGridStruct(Vec3 lowerLeft, unsigned int dimX, unsigned int dimY, unsigned int dimZ, double spacing)
 {

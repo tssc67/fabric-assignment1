@@ -36,6 +36,10 @@ namespace CompFab
             m_y += a.m_y;
             m_z += a.m_z;
         }
+        inline Vec3Struct operator*(const double &a)
+        {
+            return Vec3Struct(a*m_x,a*m_y,a*m_z);
+        }
         
         void normalize();
         
@@ -109,6 +113,9 @@ namespace CompFab
     
     //Dot Product
     double operator*(const Vec3 &v1, const Vec3 &v2);
+    
+    //Element-Wise Multiplication
+    Vec3 operator^(const Vec3 &v1, const Vec3 &v2);
     
     
     //Grid structure for Voxels
